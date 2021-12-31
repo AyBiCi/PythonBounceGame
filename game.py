@@ -62,7 +62,7 @@ class Bounce(GameObject):
         self.hitbox = Hitbox(64, self.location)
         self.gravity = 0.2
     def update(self):
-        if abs(self.velocityVector[1]) < 0.1:
+        if abs(self.velocityVector[1]) < 1:
             self.velocityVector[1] += self.gravity
         else:
             self.velocityVector[1] += self.gravity
@@ -71,13 +71,15 @@ class Bounce(GameObject):
         for tile in tiles:
             bounceVector = self.hitbox.getBounceVector(tile.hitbox)
             if(bounceVector[1] != 1):
-                self.location[1] = tile.hitbox.location[1] - 63
+                self.location[1] = tile.hitbox.location[1] - 65
                 if(self.velocityVector[1] < 0.3):
                     self.velocityVector[1] = 0
             self.velocityVector[0] *= bounceVector[0]
             self.velocityVector[1] *= bounceVector[1]
 
-        
+        if(self.velocityVector[0] > 1 or self.velocityVector[0] < -1):
+            self.velocityVector[0] *= abs(self.velocityVector[0]) * 1/abs(self.velocityVector[0])**1.4
+
         self.location[1] += self.velocityVector[1]
         self.location[0] += self.velocityVector[0]
     def render(self, screen):
@@ -120,7 +122,7 @@ measured = 0
 loadLevel('level1.lvl')
 
 addVector = [0,0]
-horizontalSpeed = 3
+horizontalSpeed = 10
 
 
 while True:
@@ -132,7 +134,7 @@ while True:
         tile.render(screen)
 
     bounce.update()
-    camera = [bounce.location[0]*-1 + DISPLAY_X/2 , bounce.location[1] *-1 + DISPLAY_Y/2 + 120]
+    camera = [bounce.location[0]*-1 + DISPLAY_X/2 , 0]
     bounce.render(screen)
 
     for event in pygame.event.get():
